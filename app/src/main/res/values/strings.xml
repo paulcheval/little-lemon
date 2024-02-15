@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">little-lemon</string>
+    <string name="get_to_know_you">Let\'s get to know you</string>
+    <string name="personal_information">Personal information</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="email">Email</string>
+    <string name="register_button_text">Register</string>
+    <string name= "little_lemon_logo_desc">Little Lemon Logo</string>
+    <string name="profile__missing_values_error_mesaage">Registration unsuccessful. Please enter all data.</string>
+    <string name="profile_update_successful">Registration successful!</string>
+    <string name="profile_update_failure">Registration failure!</string>
+    <string name="ok">OK</string>
+    <string name="logout">Log out</string>
+    <string name="shared_preferences">LttleLemon.prefs</string>
 </resources>

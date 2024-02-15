@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -16,15 +17,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = PrimaryGreen,
+    secondary = PrimaryYellow,
+    tertiary = Pink80,
+    onPrimary = HighlightWhite,
+    onSecondary = HighlightBlack
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = PrimaryGreen,
+    secondary = PrimaryYellow,
+    tertiary = Pink40,
+    onPrimary = HighlightBlack,
+    onSecondary = HighlightWhite
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -65,6 +70,7 @@ fun LittlelemonTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = LittleLemonShapes,
         content = content
     )
 }

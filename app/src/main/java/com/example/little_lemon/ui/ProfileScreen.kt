@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -73,10 +74,7 @@ fun ProfileScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-
-            modifier = Modifier
-
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
@@ -88,19 +86,21 @@ fun ProfileScreen(
         }
 
         Row(
-            horizontalArrangement = Arrangement.Absolute.Left,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
         ) {
 
             Text(
                 text = stringResource(id = R.string.personal_information),
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Left
             )
         }
         Row(
             modifier
                 .fillMaxWidth()
-                .weight(3f)
+                .weight(2f)
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -169,21 +169,24 @@ fun PersonInfo(
     modifier: Modifier = Modifier
 ) {
     Column {
-        Row() {
+        Row(horizontalArrangement = Arrangement.Start) {
             Text(
                 text = stringResource(id = boxType),
                 modifier = Modifier.padding(top = 12.dp, bottom = 5.dp),
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                textAlign = TextAlign.Left
             )
         }
-        Row {
+        Row(modifier = Modifier.padding(end = 25.dp)) {
             Text(
                 text = dataValue,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 5.dp, end = 5.dp)
-                    .border(1.dp, Color(0xFF333333), shape = MaterialTheme.shapes.large),
-                style = MaterialTheme.typography.displayMedium,
+                    .height(30.dp)
+                    .border(1.dp, Color(0xFF333333), shape = MaterialTheme.shapes.large)
+                    .padding(start = 5.dp),
+                style = MaterialTheme.typography.bodyLarge,
+
 
             )
         }

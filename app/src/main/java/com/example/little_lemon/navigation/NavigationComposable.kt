@@ -2,18 +2,21 @@ package com.example.little_lemon.navigation
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.little_lemon.db.MenuDatabase
 import com.example.little_lemon.ui.HomeScreen
 import com.example.little_lemon.ui.OnboardingScreen
 import com.example.little_lemon.ui.ProfileScreen
 
 
 @Composable
-fun Navigation(navController: NavHostController = rememberNavController(),  context: Context) {
+fun Navigation(
+    navController: NavHostController = rememberNavController(),
+    context: Context,
+) {
 
     NavHost(
         navController = navController,

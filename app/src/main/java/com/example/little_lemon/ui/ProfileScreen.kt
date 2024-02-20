@@ -1,6 +1,7 @@
 package com.example.little_lemon.ui
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,16 +45,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavHostController
 import com.example.little_lemon.R
+import com.example.little_lemon.db.MenuItemRespository
 import com.example.little_lemon.navigation.Home
 import com.example.little_lemon.navigation.Onboarding
 import com.example.little_lemon.navigation.Profile
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier) {
+    val viewModel: LittleLemonMenuViewModel = viewModel()
+    val menuItemRepository = MenuItemRespository(LocalContext.current)
 
     val sharedPreferences = LocalContext.current.getSharedPreferences(
         "LittleLemon.prefs",
@@ -62,6 +74,9 @@ fun ProfileScreen(
     val firstName= sharedPreferences.getString("firstName", "")?: ""
     val lastName= sharedPreferences.getString("lastName", "")?: ""
     val email= sharedPreferences.getString("email", "")?: ""
+
+    val menuItems = menuItemRepository.getAllItems()
+        .observeAsState(emptyList()).value
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -142,6 +157,8 @@ fun ProfileScreen(
                         .remove("lastName")
                         .remove("email")
                         .apply()
+
+
                     navController.navigate(Onboarding.route)
                 },
                 colors = ButtonDefaults.buttonColors(

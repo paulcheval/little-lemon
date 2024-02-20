@@ -92,7 +92,7 @@ fun OnboardingScreen(
     }
 
     if (showFailureAlertDialog) {
-        Alert(name = stringResource(id = R.string.profile__missing_values_error_mesaage),
+        Alert(name = stringResource(id = R.string.profile__missing_values_error_message),
             title = stringResource(id = R.string.profile_update_failure),
             onDismiss = {
                 showFailureAlertDialog = false

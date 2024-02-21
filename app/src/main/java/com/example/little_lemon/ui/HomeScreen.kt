@@ -67,29 +67,82 @@ fun HomeScreen(navController: NavHostController) {
     //val viewModel: LittleLemonMenuViewModel = viewModel()
     val menuItemRepository = MenuItemRespository(LocalContext.current)
 
-
-
-
     Log.d("HomeScreen", "Before getting and observing")
     //val menuItems = viewModel.()
      //   .observeAsState(emptyList()).value
     val menuItems = menuItemRepository.getAllItems()
         .observeAsState(emptyList()).value
+    var filteredMenuItems by remember {
+        mutableStateOf(listOf<MenuItem>())
+    }
+    var categorizedMenuItems by remember {
+        mutableStateOf(listOf<MenuItem>())
+    }
+    var selectCategory by remember {
+        mutableStateOf("")
+    }
+    var searchCriteria by remember {
+        mutableStateOf("")
+    }
+
+    Log.d("HomeScreen Filtered List", "${filteredMenuItems.size}")
     Log.d("HomeScreen", "After getting and observing ${menuItems.size}")
 
+    var categories = menuItems.map { menuItem ->
+        menuItem.category
+    }.distinct().sorted()
+
+    Log.d("Home page calculated categories", categories.toString())
     Column {
-        UpperScreen(navController)
-        MenuScreen(menuItems)
+        UpperScreen(
+            navController,
+            categories =categories,
+            searchCriteria = searchCriteria,
+            onSearchCriteriaChange = { searchCriteria = it }
+        ) { selectCategory = it }
+
+        filteredMenuItems = if(searchCriteria.isBlank()) {
+            menuItems
+        } else {
+            menuItems.filter {
+                it.title.lowercase().contains(searchCriteria.lowercase())
+            }
+        }
+
+        categorizedMenuItems = if(selectCategory.isBlank()) {
+            filteredMenuItems
+        } else {
+            filteredMenuItems.filter {
+                it.category.lowercase().equals(selectCategory.lowercase())
+            }
+        }
+        Log.d("HomeScreen - filters", "searchCritera ${searchCriteria}")
+        Log.d("HomeScreen - filters", "categories ${selectCategory}")
+        MenuScreen(categorizedMenuItems)
     }
 
 
 }
 
 @Composable
-fun UpperScreen(navController: NavHostController) {
+fun UpperScreen(
+    navController: NavHostController,
+    categories: List<String>,
+    searchCriteria: String,
+    onSearchCriteriaChange: (String) -> Unit,
+    onCategorySelection: (String) -> Unit
+) {
+
     Column {
         Header(navController)
-        HeroSection()
+        HeroSection(
+            searchCriteria = searchCriteria,
+            onSearchCriteriaChange = onSearchCriteriaChange)
+        DeliveryMessage()
+        CategoriesScreen(
+            categories = categories,
+            onCategorySelection = onCategorySelection
+        )
     }
 
 }
@@ -127,10 +180,10 @@ fun Header(navController: NavHostController) {
 }
 
 @Composable
-fun HeroSection() {
-    var searchPhrase by remember {
-        mutableStateOf("")
-    }
+fun HeroSection(
+    searchCriteria: String,
+    onSearchCriteriaChange: (String)-> Unit) {
+
     Column(
         modifier = Modifier
             .background(Color(0xFF495E57))
@@ -169,8 +222,6 @@ fun HeroSection() {
                     .height(175.dp)
                     .clip(RoundedCornerShape(20.dp))
             )
-
-
         }
         Row(
             modifier = Modifier
@@ -181,8 +232,8 @@ fun HeroSection() {
 
 
             OutlinedTextField(
-                value = searchPhrase,
-                onValueChange =  { searchPhrase = it },
+                value = searchCriteria,
+                onValueChange =  onSearchCriteriaChange,
                 leadingIcon = {
                     Icon(imageVector = Icons.Default.Search,
                         contentDescription = null )
@@ -215,8 +266,7 @@ fun MenuScreen(menuItems: List<MenuItem>) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        DeliveryMessage()
-        CategoriesScreen()
+
         MenuItems(menuItems)
     }
 }
@@ -234,25 +284,45 @@ fun DeliveryMessage() {
 }
 
 @Composable
-fun CategoriesScreen() {
+fun CategoriesScreen(
+    categories: List<String>,
+    onCategorySelection: (String) -> Unit
+) {
     LazyRow() {
-        items(Categories.values()) {category ->
-            MenuCategory(category = category.name)
+        items(categories) {category ->
+            MenuCategory(
+                category = category,
+                onCategorySelection = onCategorySelection)
         }
     }
 
 }
 
 @Composable
-fun MenuCategory(category: String) {
+fun MenuCategory(category: String, onCategorySelection: (String) -> Unit) {
+    val clicked = remember {
+        mutableStateOf(false)
+    }
     Button(
-        onClick = { /*TODO*/ },
-        colors = ButtonDefaults.buttonColors(Color.LightGray),
+        onClick = {
+            Log.d("Home Screen - filters", "onclicked ${clicked}")
+            clicked.value = !clicked.value
+            if (clicked.value) {
+                onCategorySelection(category)
+            } else {
+                onCategorySelection("")
+            }
+        },
+        colors = if (clicked.value) {
+            ButtonDefaults.buttonColors(Color.DarkGray)
+        } else {
+            ButtonDefaults.buttonColors(Color.LightGray)
+        },
         shape = RoundedCornerShape(40),
         modifier = Modifier.padding(5.dp)
     ) {
         Text(
-            text = category
+            text = category.replaceFirstChar { it.uppercase() }
         )
     }
 }

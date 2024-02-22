@@ -1,7 +1,8 @@
 package com.example.little_lemon.ui
 
 import android.content.Context
-import android.widget.Toast
+import android.util.Log
+import android.util.Patterns
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -75,8 +76,12 @@ fun OnboardingScreen(
         mutableStateOf(false)
     }
 
+    var showEmailValidationAlertDialog by remember {
+        mutableStateOf(false)
+    }
+
     if (showSuccessAlertDialog) {
-        Alert(name = "",
+        Alert(
             title = stringResource(id = R.string.profile_update_successful),
             onDismiss = {
                 showSuccessAlertDialog = false
@@ -92,10 +97,21 @@ fun OnboardingScreen(
     }
 
     if (showFailureAlertDialog) {
-        Alert(name = stringResource(id = R.string.profile__missing_values_error_message),
+        Alert(
+            textLine1 = stringResource(id = R.string.profile__missing_values_error_message_1),
+            textLine2 = stringResource(id = R.string.profile__missing_values_error_message_2),
             title = stringResource(id = R.string.profile_update_failure),
             onDismiss = {
                 showFailureAlertDialog = false
+            })
+    }
+
+    if (showEmailValidationAlertDialog) {
+        Alert(
+            textLine1 = stringResource(id = R.string.invalid_email_format),
+            title = stringResource(id = R.string.profile_update_failure),
+            onDismiss = {
+                showEmailValidationAlertDialog = false
             })
     }
 
@@ -190,17 +206,15 @@ fun OnboardingScreen(
         ) {
             Button(
                 onClick = {
-                    if (inputFieldsPopulatedy(firstName, lastName, email)) {
-                        showSuccessAlertDialog = true
-                    } else {
+                    if (!inputFieldsPopulatedFully(firstName, lastName, email)) {
                         showFailureAlertDialog = true
+                    } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        showEmailValidationAlertDialog = true
+                    } else {
+                        showSuccessAlertDialog = true
                     }
-
-
                 },
-                colors = ButtonDefaults.buttonColors(
-                    Color(0xFFF4CE14)
-                ),
+                colors = ButtonDefaults.buttonColors(Color(0xFFF4CE14)),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -208,7 +222,8 @@ fun OnboardingScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.register_button_text),
-                    color = Color(0xFF333333)
+                    color = Color(0xFF333333),
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
         }
@@ -218,7 +233,8 @@ fun OnboardingScreen(
 
 @Composable
 fun Alert(
-    name: String,
+    textLine1: String = "",
+    textLine2: String = "",
     title: String,
     onDismiss: () -> Unit
 ) {
@@ -227,8 +243,11 @@ fun Alert(
             Text(text =title)
         },
         text = {
-            Text(text = name,
-                maxLines = 2)
+            Column {
+                Text(text = textLine1)
+                Text(text = textLine2)
+            }
+
         },
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -238,9 +257,10 @@ fun Alert(
         },
         dismissButton = {}
     )
+
 }
 
-fun inputFieldsPopulatedy(firstName: String, lastName: String, email: String): Boolean {
+fun inputFieldsPopulatedFully(firstName: String, lastName: String, email: String): Boolean {
     if (firstName.isBlank()) { return false }
     if (lastName.isBlank()) { return false }
     if (email.isBlank()) { return false }
@@ -272,7 +292,7 @@ fun PersonalInfoEntryBox(
     imeAction: ImeAction,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(modifier = Modifier.padding(end = 20.dp)) {
         Row() {
             Text(
                 text = stringResource(id = boxType),
@@ -291,6 +311,8 @@ fun PersonalInfoEntryBox(
                     keyboardType = keyboardType,
                     imeAction = imeAction
                 ),
+                textStyle = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

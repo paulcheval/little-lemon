@@ -12,7 +12,6 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import kotlinx.coroutines.flow.Flow
 
 @Entity
 data class MenuItem(
@@ -43,7 +42,7 @@ abstract class MenuDatabase: RoomDatabase(){
     abstract fun menuItemDao(): MenuDao
 }
 
-class MenuItemRespository(context: Context) {
+class MenuItemRepository(context: Context) {
     private val database by lazy {
         Room.databaseBuilder(
             context,

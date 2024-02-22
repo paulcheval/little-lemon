@@ -25,7 +25,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -59,68 +61,64 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.little_lemon.db.MenuItemRespository
+import com.example.little_lemon.db.MenuItemRepository
 
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    //val viewModel: LittleLemonMenuViewModel = viewModel()
-    val menuItemRepository = MenuItemRespository(LocalContext.current)
 
-    Log.d("HomeScreen", "Before getting and observing")
-    //val menuItems = viewModel.()
-     //   .observeAsState(emptyList()).value
+    val menuItemRepository = MenuItemRepository(LocalContext.current)
+
     val menuItems = menuItemRepository.getAllItems()
         .observeAsState(emptyList()).value
+
     var filteredMenuItems by remember {
         mutableStateOf(listOf<MenuItem>())
     }
+
     var categorizedMenuItems by remember {
         mutableStateOf(listOf<MenuItem>())
     }
-    var selectCategory by remember {
-        mutableStateOf("")
-    }
-    var searchCriteria by remember {
+
+    var selectedCategory by remember {
         mutableStateOf("")
     }
 
-    Log.d("HomeScreen Filtered List", "${filteredMenuItems.size}")
-    Log.d("HomeScreen", "After getting and observing ${menuItems.size}")
+    var searchCriteria by remember {
+        mutableStateOf("")
+    }
 
     var categories = menuItems.map { menuItem ->
         menuItem.category
     }.distinct().sorted()
 
-    Log.d("Home page calculated categories", categories.toString())
     Column {
         UpperScreen(
-            navController,
+            navController =navController,
             categories =categories,
             searchCriteria = searchCriteria,
-            onSearchCriteriaChange = { searchCriteria = it }
-        ) { selectCategory = it }
+            onSearchCriteriaChange = { searchCriteria = it },
+            onCategorySelection =  { selectedCategory = it  }
+        )
+
 
         filteredMenuItems = if(searchCriteria.isBlank()) {
             menuItems
         } else {
             menuItems.filter {
-                it.title.lowercase().contains(searchCriteria.lowercase())
+                it.title.lowercase().contains(searchCriteria, ignoreCase = true)
             }
         }
 
-        categorizedMenuItems = if(selectCategory.isBlank()) {
+        categorizedMenuItems = if(selectedCategory.isBlank()) {
             filteredMenuItems
         } else {
             filteredMenuItems.filter {
-                it.category.lowercase().equals(selectCategory.lowercase())
+                it.category.lowercase() == selectedCategory.lowercase()
             }
         }
-        Log.d("HomeScreen - filters", "searchCritera ${searchCriteria}")
-        Log.d("HomeScreen - filters", "categories ${selectCategory}")
         MenuScreen(categorizedMenuItems)
     }
-
 
 }
 
@@ -151,10 +149,11 @@ fun UpperScreen(
 fun Header(navController: NavHostController) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier
-    ) {
-        Spacer(modifier = Modifier.weight(2f))
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier) {
+
+        Spacer(modifier = Modifier.weight(1f))
+
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = stringResource(id = R.string.little_lemon_logo_desc),
@@ -163,6 +162,7 @@ fun Header(navController: NavHostController) {
                 .width(200.dp)
                 .weight(2f)
         )
+
         Image(
             painter = painterResource(id = R.drawable.profile),
             contentDescription = stringResource(id = R.string.little_lemon_logo_desc),
@@ -173,12 +173,12 @@ fun Header(navController: NavHostController) {
                 .clickable(
                     onClick = {
                         navController.navigate(Profile.route)
-                    }
-                )
+                    })
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeroSection(
     searchCriteria: String,
@@ -195,33 +195,35 @@ fun HeroSection(
             fontWeight = FontWeight.Bold,
             color = Color(0xFFF4CE14)
         )
+
         Text(
             text = stringResource(id = R.string.location),
             fontSize = 24.sp,
             color = Color(0xFFEDEFEE)
         )
+
         Row(
             modifier = Modifier
                 .padding(top = 18.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            Text(
-                text = stringResource(id = R.string.hero_message),
-                color = Color(0xFFEDEFEE),
-                fontSize = 18.sp,
-                modifier = Modifier
-                    .padding(bottom = 28.dp)
-                    .fillMaxWidth(0.6f)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.hero_image),
-                contentDescription = stringResource(id = R.string.little_lemon_logo_desc),
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .align(Alignment.Top)
-                    .height(175.dp)
-                    .clip(RoundedCornerShape(20.dp))
-            )
+            verticalAlignment = Alignment.Top) {
+
+                Text(
+                    text = stringResource(id = R.string.hero_message),
+                    color = Color(0xFFEDEFEE),
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .padding(bottom = 28.dp)
+                        .fillMaxWidth(0.6f)
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.hero_image),
+                    contentDescription = stringResource(id = R.string.little_lemon_logo_desc),
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .height(175.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                )
         }
         Row(
             modifier = Modifier
@@ -229,7 +231,6 @@ fun HeroSection(
                 .background(Color(0xFF495E57))
 
         ) {
-
 
             OutlinedTextField(
                 value = searchCriteria,
@@ -250,7 +251,7 @@ fun HeroSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(MaterialTheme.colorScheme.onPrimary)
                     .clipToBounds(),
             )
 
@@ -258,29 +259,17 @@ fun HeroSection(
 
     }
 }
-
-@Composable
-fun MenuScreen(menuItems: List<MenuItem>) {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-        MenuItems(menuItems)
-    }
-}
-
 @Composable
 fun DeliveryMessage() {
     Row (horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(id = R.string.Order_for_delivery),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, top = 15.dp, bottom = 5.dp)) {
+        Text(text = stringResource(id = R.string.Order_for_delivery).uppercase(),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Left)
     }
-
 }
 
 @Composable
@@ -295,35 +284,16 @@ fun CategoriesScreen(
                 onCategorySelection = onCategorySelection)
         }
     }
-
 }
-
 @Composable
-fun MenuCategory(category: String, onCategorySelection: (String) -> Unit) {
-    val clicked = remember {
-        mutableStateOf(false)
-    }
-    Button(
-        onClick = {
-            Log.d("Home Screen - filters", "onclicked ${clicked}")
-            clicked.value = !clicked.value
-            if (clicked.value) {
-                onCategorySelection(category)
-            } else {
-                onCategorySelection("")
-            }
-        },
-        colors = if (clicked.value) {
-            ButtonDefaults.buttonColors(Color.DarkGray)
-        } else {
-            ButtonDefaults.buttonColors(Color.LightGray)
-        },
-        shape = RoundedCornerShape(40),
-        modifier = Modifier.padding(5.dp)
+fun MenuScreen(menuItems: List<MenuItem>) {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = category.replaceFirstChar { it.uppercase() }
-        )
+        MenuDivider(color = Color.Gray)
+        MenuItems(menuItems)
     }
 }
 
@@ -337,10 +307,54 @@ fun MenuItems(menuItems: List<MenuItem>) {
     }
 }
 
+@Composable
+fun MenuCategory(
+    category: String,
+    onCategorySelection: (String) -> Unit) {
+    val clicked = remember {
+        mutableStateOf(false)
+    }
+
+    var buttonBackgroundColor = remember {
+        mutableStateOf(Color(0xFFEDEFEE))
+    }
+
+    var buttonTextColor = remember {
+        mutableStateOf(Color(0xFF495E57))
+    }
+    
+    Button(
+        onClick = {
+            Log.d("Home Screen - filters", "onclicked ${clicked}")
+            clicked.value = !clicked.value
+            if (clicked.value) {
+                onCategorySelection(category)
+                buttonBackgroundColor.value = Color(0xFF495E57)
+                buttonTextColor.value = Color(0xFFF4CE14)
+            } else {
+                onCategorySelection("")
+                buttonBackgroundColor.value = Color(0xFFEDEFEE)
+                buttonTextColor.value = Color(0xFF333333)
+            }
+        },
+        colors = 
+            ButtonDefaults.buttonColors(buttonBackgroundColor.value),
+        shape = RoundedCornerShape(40),
+        modifier = Modifier.padding(5.dp)
+    ) {
+        Text(
+            text = category.replaceFirstChar { it.uppercase() },
+            color = buttonTextColor.value,
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
+}
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MenuItemCard(menuItem: MenuItem) {
-    Card {
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -348,7 +362,8 @@ fun MenuItemCard(menuItem: MenuItem) {
         ) {
             Column {
                 Text(
-                    text = menuItem.title, fontSize = 18.sp, fontWeight = FontWeight.Bold
+                    text = menuItem.title,
+                    style = MaterialTheme.typography.labelMedium
                 )
                 Text(
                     text = menuItem.description,
@@ -358,23 +373,27 @@ fun MenuItemCard(menuItem: MenuItem) {
                         .fillMaxWidth(.75f)
                 )
                 Text(
-                    text = menuItem.price, color = Color.Gray, fontWeight = FontWeight.Bold
+                    text = menuItem.price,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color(0xFF333333),
                 )
             }
             GlideImage(
                 model = menuItem.image,
                 contentDescription = menuItem.description )
-           /* Image(
-                painter = painterResource(id = menuItem.image),
-                contentDescription = "",
-            )*/
         }
     }
+    MenuDivider(Color.LightGray)
+}
+
+@Composable
+fun MenuDivider(color: Color) {
     Divider(
         modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-        color = Color.LightGray,
+        color = color,
         thickness = 1.dp
     )
+
 }
 @Preview
 @Composable

@@ -1,70 +1,48 @@
 package com.example.little_lemon.ui
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavHostController
 import com.example.little_lemon.R
-import com.example.little_lemon.db.MenuItemRespository
-import com.example.little_lemon.navigation.Home
+import com.example.little_lemon.db.MenuItemRepository
 import com.example.little_lemon.navigation.Onboarding
-import com.example.little_lemon.navigation.Profile
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier) {
+
     val viewModel: LittleLemonMenuViewModel = viewModel()
-    val menuItemRepository = MenuItemRespository(LocalContext.current)
+    val menuItemRepository = MenuItemRepository(LocalContext.current)
 
     val sharedPreferences = LocalContext.current.getSharedPreferences(
         "LittleLemon.prefs",
@@ -81,8 +59,7 @@ fun ProfileScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
             .border(BorderStroke(2.dp, Color.Black))
             .padding(top = 15.dp, bottom = 15.dp)
     ) {
@@ -115,14 +92,13 @@ fun ProfileScreen(
         Row(
             modifier
                 .fillMaxWidth()
-                .weight(2f)
+                .weight(3f)
         ) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.padding(start = 15.dp)
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
-
 
                 PersonInfo(
                     boxType = R.string.first_name,
@@ -143,12 +119,12 @@ fun ProfileScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
         ) {
+            Spacer(modifier = Modifier.height(40.dp))
             Button(
                 onClick = {
                     sharedPreferences
@@ -156,14 +132,11 @@ fun ProfileScreen(
                         .remove("firstName")
                         .remove("lastName")
                         .remove("email")
+                        .remove("clientLoggedIn")
                         .apply()
-
-
                     navController.navigate(Onboarding.route)
                 },
-                colors = ButtonDefaults.buttonColors(
-                    Color(0xFFF4CE14)
-                ),
+                colors = ButtonDefaults.buttonColors(Color(0xFFF4CE14)),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -171,7 +144,8 @@ fun ProfileScreen(
             ) {
                 Text(
                     text = stringResource(id = R.string.logout),
-                    color = Color(0xFF333333)
+                    color  = Color(0xFF333333),
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
         }
@@ -199,10 +173,13 @@ fun PersonInfo(
                 text = dataValue,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(30.dp)
                     .border(1.dp, Color(0xFF333333), shape = MaterialTheme.shapes.large)
-                    .padding(start = 5.dp),
-                style = MaterialTheme.typography.bodyLarge,
+                    .height(50.dp)
+                    .padding(start = 5.dp, top = 10.dp, bottom = 5.dp),
+
+
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Left
 
 
             )

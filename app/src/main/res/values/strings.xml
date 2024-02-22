@@ -9,7 +9,8 @@
     <string name="register_button_text">Register</string>
     <string name= "little_lemon_logo_desc">Little Lemon Logo</string>
     <string name= "profile_image_desc">Profile Image</string>
-    <string name="profile__missing_values_error_message">Registration unsuccessful. Please enter all data.</string>
+    <string name="profile__missing_values_error_message_1">Registration unsuccessful.</string>
+    <string name="profile__missing_values_error_message_2">Please enter all data.</string>
     <string name="profile_update_successful">Registration successful!</string>
     <string name="profile_update_failure">Registration failure!</string>
     <string name="ok">OK</string>
@@ -18,5 +19,6 @@
     <string name="location">Chicago</string>
     <string name="hero_message">We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.</string>
     <string name="search_criteria_placeholder">Enter search criteria</string>
-    <string name="Order_for_delivery">Order for Delivery</string>
+    <string name="Order_for_delivery">Order for Delivery!</string>
+    <string name="invalid_email_format">Invalid Email format</string>
 </resources>

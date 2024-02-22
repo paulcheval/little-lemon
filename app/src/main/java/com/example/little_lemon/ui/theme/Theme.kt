@@ -21,15 +21,17 @@ private val DarkColorScheme = darkColorScheme(
     secondary = PrimaryYellow,
     tertiary = Pink80,
     onPrimary = HighlightWhite,
-    onSecondary = HighlightBlack
+    onSecondary = HighlightBlack,
+    //surface =HighlightWhite
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryGreen,
     secondary = PrimaryYellow,
     tertiary = Pink40,
-    onPrimary = HighlightBlack,
-    onSecondary = HighlightWhite
+    onPrimary = HighlightWhite,
+    onSecondary = HighlightBlack,
+    //surface =HighlightWhite
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

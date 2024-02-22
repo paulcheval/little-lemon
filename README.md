@@ -6,7 +6,7 @@ The **wireframes** are located at the same level as this file - at the top level
 
 The code is as one would expect - this was built expecting it to be loaded via Android studio
 
-##Flow
+Flow
 
 1) First time accessing, user will be directed to _Onboarding_ screen - must enter values in first and last name as well as an email address in a valid format
 2) Upon successful registration, the _Home_ screen will display with header, 'hero section' and menu list

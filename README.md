@@ -16,3 +16,5 @@ Flow
 6) Clicking on the Profile picture in the header will bring the user to the _Profile_ page
 7) The _Profile_ page shows the registration info, 'Logging out' will remove the info and force the user to re-register via the _Onboarding_ page. 
 8) Use back button to navigate back
+
+This is part of the "Meta Android Developer Certificate" via Coursera
